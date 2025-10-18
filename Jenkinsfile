@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building the app...'
+                // Run your build steps if any
+            }
+        }
+
+        stage('Start App') {
+            steps {
+                echo 'Starting web app...'
+                sh 'nohup node index.js &'
+                sleep time: 5, unit: 'SECONDS'
+            }
+        }
+
+        stage('Performance Test with K6') {
+            steps {
+                echo 'Running K6 performance test...'
+                sh 'k6 run loadtest.js'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Cleaning up...'
+            sh 'pkill -f node || true'
+        }
+    }
+}
